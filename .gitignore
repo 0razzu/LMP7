@@ -2,8 +2,8 @@
 *.war
 *.ear
 
-*/target
-*/bin
+target/
+bin/
 
 *.log.*
 *.log
