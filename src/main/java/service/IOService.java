@@ -4,6 +4,8 @@ package service;
 import error.ErrorMessage;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class IOService {
@@ -84,5 +86,47 @@ public class IOService {
             array[i] = file.readInt();
         
         return array;
+    }
+    
+    
+    public static List<File> getFilesByExtension(File dir, String extension, boolean checkSubfolders) {
+        if (!dir.isDirectory())
+            throw new IllegalArgumentException(ErrorMessage.NOT_A_DIRECTORY);
+        
+        List<File> files = new ArrayList<>();
+        
+        if (extension != null) {
+            if (extension.length() == 0) {
+                for (File file: dir.listFiles()) {
+                    if (file.isFile()) {
+                        String fileName = file.getName();
+    
+                        if (fileName.lastIndexOf('.') == -1)
+                            files.add(file);
+                    }
+                    
+                    else if (file.isDirectory() && checkSubfolders)
+                        files.addAll(getFilesByExtension(file, extension, true));
+                }
+            }
+            
+            else {
+                String suffix = "." + extension;
+                
+                for (File file: dir.listFiles()) {
+                    if (file.isFile()) {
+                        String fileName = file.getName();
+    
+                        if (fileName.endsWith(suffix))
+                            files.add(file);
+                    }
+
+                    else if (file.isDirectory() && checkSubfolders)
+                        files.addAll(getFilesByExtension(file, extension, true));
+                }
+            }
+        }
+        
+        return files;
     }
 }
