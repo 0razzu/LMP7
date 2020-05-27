@@ -9,7 +9,7 @@ import java.io.*;
 public class IOService {
     private static void checkSize(int size) {
         if (size < 0)
-            throw new IllegalArgumentException(ErrorMessage.NEGATIVE_SIZE);
+            throw new NegativeArraySizeException(Integer.toString(size));
     }
     
     
@@ -26,28 +26,26 @@ public class IOService {
     
     
     public static int[] readIntArrayFromBinaryStream(InputStream stream, int size) throws IOException {
-        checkSize(size);
-    
-        int[] ints = new int[size];
+        int[] array = new int[size];
         byte[] value = new byte[4];
         
         for (int i = 0; i < size; i++) {
             if (stream.read(value) < 4)
                 throw new IOException();
             
-            ints[i] = ((value[0] & 0xff) << 24) +
+            array[i] = ((value[0] & 0xff) << 24) +
                     ((value[1] & 0xff) << 16) +
                     ((value[2] & 0xff) << 8) +
                     (value[3] & 0xff);
         }
         
-        return ints;
+        return array;
     }
     
     
     public static void writeIntArrayToCharStream(int[] array, Writer stream, int size) throws IOException {
         checkSize(size);
-    
+        
         for (int i = 0; i < size; i++) {
             stream.write(Integer.toString(array[i]));
             stream.write(" ");
@@ -56,8 +54,6 @@ public class IOService {
     
     
     public static int[] readIntArrayFromCharStream(Reader stream, int size) throws IOException {
-        checkSize(size);
-    
         char[] chars = new char[12 * size];
         
         if (stream.read(chars) == -1)
@@ -65,11 +61,28 @@ public class IOService {
         
         String[] strings = new String(chars).split(" ");
         
-        int[] ints = new int[size];
+        int[] array = new int[size];
         
         for (int i = 0; i < size; i++)
-            ints[i] = Integer.parseInt(strings[i]);
+            array[i] = Integer.parseInt(strings[i]);
         
-        return ints;
+        return array;
+    }
+    
+    
+    public static int[] readIntArrayFromRandomAccessFile(RandomAccessFile file, long offset, int size) throws IOException {
+        if (offset < 0)
+            throw new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET);
+        
+        checkSize(size);
+        
+        file.seek(offset);
+        
+        int[] array = new int[size];
+        
+        for (int i = 0; i < size; i++)
+            array[i] = file.readInt();
+        
+        return array;
     }
 }
