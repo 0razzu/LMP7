@@ -42,12 +42,50 @@ public class TestIOService {
         int[] actual = new int[]{1, 2, -3, 2000000};
         int[] expected = new int[4];
         
-        try (OutputStream out = new FileOutputStream(file)) {
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
             IOService.writeIntArrayToBinaryStream(actual, out, 4);
         }
         
-        try (InputStream in = new FileInputStream(file)) {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
             IOService.readIntArrayFromBinaryStream(expected, in, 4);
+        }
+        
+        assertArrayEquals(actual, expected);
+    }
+    
+    
+    @Test
+    void testInputOutputChar1() throws IOException {
+        StringWriter out = new StringWriter();
+        
+        int[] array = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
+        int[] actual = new int[]{-1, 3, -2147483648, 20, 141};
+        int[] expected = new int[5];
+        
+        IOService.writeIntArrayToCharStream(array, out, 6);
+        IOService.readIntArrayFromCharStream(expected, new StringReader(out.toString()), 5);
+        
+        assertAll(
+                () -> assertArrayEquals(actual, expected),
+                () -> assertThrows(ArrayIndexOutOfBoundsException.class,
+                        () -> IOService.readIntArrayFromCharStream(expected, new StringReader(out.toString()), 7))
+        );
+    }
+    
+    
+    @Test
+    void testInputOutputChar2() throws IOException {
+        File file = new File(tempDir, "test.txt");
+        
+        int[] actual = new int[]{1, 2, -3, 2000000};
+        int[] expected = new int[4];
+        
+        try (Writer out = new BufferedWriter(new FileWriter(file))) {
+            IOService.writeIntArrayToCharStream(actual, out, 4);
+        }
+        
+        try (Reader in = new BufferedReader(new FileReader(file))) {
+            IOService.readIntArrayFromCharStream(expected, in, 4);
         }
         
         assertArrayEquals(actual, expected);
