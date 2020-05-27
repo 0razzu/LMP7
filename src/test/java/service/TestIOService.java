@@ -1,6 +1,7 @@
 package service;
 
 
+import error.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -24,11 +25,7 @@ public class TestIOService {
         IOService.writeIntArrayToBinaryStream(array, out, 6);
         int[] actual = IOService.readIntArrayFromBinaryStream(new ByteArrayInputStream(out.toByteArray()), 5);
         
-        assertAll(
-                () -> assertArrayEquals(expected, actual),
-                () -> assertThrows(IOException.class,
-                        () -> IOService.readIntArrayFromBinaryStream(new ByteArrayInputStream(new byte[5]), 2))
-        );
+        assertArrayEquals(expected, actual);
     }
     
     
@@ -52,6 +49,27 @@ public class TestIOService {
     
     
     @Test
+    void testInputOutputBinaryException() throws IOException {
+        assertThrows(IOException.class,
+                () -> IOService.readIntArrayFromBinaryStream(new ByteArrayInputStream(new byte[5]), 2));
+        
+        try {
+            IOService.writeIntArrayToBinaryStream(new int[]{1, 2, 3}, new ByteArrayOutputStream(), -1);
+            fail("Written an array of negative size");
+        } catch (IllegalArgumentException e) {
+            assertEquals(ErrorMessage.NEGATIVE_SIZE, e.getMessage());
+        }
+        
+        try {
+            IOService.readIntArrayFromBinaryStream(new ByteArrayInputStream(new byte[3]), -2);
+            fail("Read an array of negative size");
+        } catch (IllegalArgumentException e) {
+            assertEquals(ErrorMessage.NEGATIVE_SIZE, e.getMessage());
+        }
+    }
+    
+    
+    @Test
     void testInputOutputChar1() throws IOException {
         StringWriter out = new StringWriter();
         
@@ -65,10 +83,7 @@ public class TestIOService {
         
         assertAll(
                 () -> assertArrayEquals(expected, actual),
-                () -> assertThrows(IOException.class,
-                        () -> IOService.readIntArrayFromCharStream(new StringReader(""), 3)),
-                () -> assertThrows(NumberFormatException.class,
-                        () -> IOService.readIntArrayFromCharStream(new StringReader(str), 7))
+                () -> assertEquals("-1 3 -2147483648 20 141 1 ", str)
         );
     }
     
@@ -89,5 +104,28 @@ public class TestIOService {
         }
         
         assertArrayEquals(expected, actual);
+    }
+    
+    
+    @Test
+    void testInputOutputCharException() throws IOException {
+        assertThrows(IOException.class,
+                () -> IOService.readIntArrayFromCharStream(new StringReader(""), 2));
+        assertThrows(NumberFormatException.class,
+                () -> IOService.readIntArrayFromCharStream(new StringReader("1 2 3 4 "), 5));
+        
+        try {
+            IOService.writeIntArrayToCharStream(new int[]{1, 2, 3}, new StringWriter(), -1);
+            fail("Written an array of negative size");
+        } catch (IllegalArgumentException e) {
+            assertEquals(ErrorMessage.NEGATIVE_SIZE, e.getMessage());
+        }
+        
+        try {
+            IOService.readIntArrayFromCharStream(new StringReader("1 2 3 "), -2);
+            fail("Read an array of negative size");
+        } catch (IllegalArgumentException e) {
+            assertEquals(ErrorMessage.NEGATIVE_SIZE, e.getMessage());
+        }
     }
 }

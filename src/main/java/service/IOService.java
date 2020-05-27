@@ -1,11 +1,21 @@
 package service;
 
 
+import error.ErrorMessage;
+
 import java.io.*;
 
 
 public class IOService {
+    private static void checkSize(int size) {
+        if (size < 0)
+            throw new IllegalArgumentException(ErrorMessage.NEGATIVE_SIZE);
+    }
+    
+    
     public static void writeIntArrayToBinaryStream(int[] array, OutputStream stream, int size) throws IOException {
+        checkSize(size);
+        
         for (int i = 0; i < size; i++) {
             stream.write(array[i] >> 24);
             stream.write(array[i] >> 16);
@@ -16,6 +26,8 @@ public class IOService {
     
     
     public static int[] readIntArrayFromBinaryStream(InputStream stream, int size) throws IOException {
+        checkSize(size);
+    
         int[] ints = new int[size];
         byte[] value = new byte[4];
         
@@ -34,6 +46,8 @@ public class IOService {
     
     
     public static void writeIntArrayToCharStream(int[] array, Writer stream, int size) throws IOException {
+        checkSize(size);
+    
         for (int i = 0; i < size; i++) {
             stream.write(Integer.toString(array[i]));
             stream.write(" ");
@@ -42,6 +56,8 @@ public class IOService {
     
     
     public static int[] readIntArrayFromCharStream(Reader stream, int size) throws IOException {
+        checkSize(size);
+    
         char[] chars = new char[12 * size];
         
         if (stream.read(chars) == -1)
