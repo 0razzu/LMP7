@@ -6,6 +6,7 @@ import error.ErrorMessage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class IOService {
@@ -89,7 +90,7 @@ public class IOService {
     }
     
     
-    public static List<File> getFilesByExtension(File dir, String extension, boolean checkSubfolders) {
+    public static List<File> getFilesByExtension(File dir, String extension) {
         if (!dir.isDirectory())
             throw new IllegalArgumentException(ErrorMessage.NOT_A_DIRECTORY);
         
@@ -100,13 +101,10 @@ public class IOService {
                 for (File file: dir.listFiles()) {
                     if (file.isFile()) {
                         String fileName = file.getName();
-    
+                        
                         if (fileName.lastIndexOf('.') == -1)
                             files.add(file);
                     }
-                    
-                    else if (file.isDirectory() && checkSubfolders)
-                        files.addAll(getFilesByExtension(file, extension, true));
                 }
             }
             
@@ -116,17 +114,39 @@ public class IOService {
                 for (File file: dir.listFiles()) {
                     if (file.isFile()) {
                         String fileName = file.getName();
-    
+                        
                         if (fileName.endsWith(suffix))
                             files.add(file);
                     }
-
-                    else if (file.isDirectory() && checkSubfolders)
-                        files.addAll(getFilesByExtension(file, extension, true));
                 }
             }
         }
         
         return files;
+    }
+    
+    
+    private static List<File> getFilesByPattern(File dir, Pattern pattern) {
+        List<File> files = new ArrayList<>();
+        
+        for (File file: dir.listFiles()) {
+            if (pattern.matcher(file.getName()).matches())
+                files.add(file);
+            
+            if (file.isDirectory())
+                files.addAll(getFilesByPattern(file, pattern));
+        }
+        
+        return files;
+    }
+    
+    
+    public static List<File> getFilesByRegex(File dir, String regex) {
+        if (!dir.isDirectory())
+            throw new IllegalArgumentException(ErrorMessage.NOT_A_DIRECTORY);
+        
+        return regex == null?
+                new ArrayList<>() :
+                getFilesByPattern(dir, Pattern.compile(regex));
     }
 }

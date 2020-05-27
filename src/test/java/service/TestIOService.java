@@ -19,26 +19,43 @@ import static service.MockFactory.getFileMock;
 public class TestIOService {
     @TempDir
     static File tempDir;
-    static File emptyDir, dir1, dir2, dir3, dir4;
-    static File file1, file2, file3, file4, file5, file6;
-    static Comparator<File> mockFileComparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
+    static File rootDir, emptyDir, textDir, binDir, imagesDir, imagesPngDir, makefile1, makefile2;
+    static File uselessTxt, essayDocx, oneBin, catTiff, dogTiff, logoPng;
+    static Comparator<File> mockFileComparator = Comparator.comparing(File::getName);
     
     
     @BeforeAll
     static void initMocks() {
-        emptyDir = getDirMock();
+        makefile1 = getFileMock("Makefile", "~/");
+        makefile2 = getFileMock("Makefile", "~/text/");
+        uselessTxt = getFileMock("useless.txt", "~/text/");
+        essayDocx = getFileMock("essay.docx", "~/text/");
+        oneBin = getFileMock("1.bin", "~/bin/");
+        catTiff = getFileMock("cat.tiff", "~/images/");
+        dogTiff = getFileMock("dog.tiff", "~/images/");
+        logoPng = getFileMock("logo.png", "~/images/png/");
         
-        file1 = getFileMock("text.txt");
-        file2 = getFileMock("binary.bin");
-        file3 = getFileMock("image.png");
-        file4 = getFileMock("data.txt.bin");
-        file5 = getFileMock("readme.txt");
-        file6 = getFileMock("no_extension");
-        
-        dir1 = getDirMock(file1, file2, file3, file4, file5, file6);
-        dir2 = getDirMock(file1, file5, dir1);
-        dir3 = getDirMock(dir1, dir2, emptyDir);
-        dir4 = getDirMock(emptyDir, file4, dir3);
+        emptyDir = getDirMock("empty", "~/");
+        textDir = getDirMock("text", "~/", makefile2, uselessTxt, essayDocx);
+        binDir = getDirMock("bin", "~/", oneBin);
+        imagesPngDir = getDirMock("png", "~/images/", logoPng);
+        imagesDir = getDirMock("images", "~/", catTiff, imagesPngDir, dogTiff);
+        rootDir = getDirMock("~", "", makefile1, emptyDir, textDir, binDir, imagesDir);
+
+//      ~/
+//      ├ Makefile
+//      ├ empty/
+//      ├ text/
+//      | ├ Makefile
+//      | ├ useless.txt
+//      | └ essay.docx
+//      ├ bin/
+//      | └ 1.bin
+//      └ images/
+//        ├ cat.tiff
+//        ├ png/
+//        | └ logo.png
+//        └ dog.tiff
     }
     
     
@@ -176,58 +193,63 @@ public class TestIOService {
     
     
     @Test
-    void testGetFilesByExtensionFile1() {
-        assertThrows(IllegalArgumentException.class, () -> IOService.getFilesByExtension(file1, "txt", false));
-    }
-    
-    
-    @Test
-    void testGetFilesByExtensionDir1() {
-        List<File> files1 = IOService.getFilesByExtension(dir1, "txt", false);
-        List<File> files2 = IOService.getFilesByExtension(dir1, "bin", false);
-        List<File> files3 = IOService.getFilesByExtension(dir1, "", false);
-        List<File> files1Subdirs = IOService.getFilesByExtension(dir1, "txt", true);
-        List<File> files2Subdirs = IOService.getFilesByExtension(dir1, "bin", true);
+    void testGetFilesByExtension() {
+        List<File> files1 = IOService.getFilesByExtension(imagesDir, "tiff");
+        List<File> files2 = IOService.getFilesByExtension(binDir, "bin");
+        List<File> files3 = IOService.getFilesByExtension(rootDir, "");
+        List<File> files4 = IOService.getFilesByExtension(rootDir, "txt");
+        List<File> files5 = IOService.getFilesByExtension(rootDir, null);
         
         files1.sort(mockFileComparator);
-        files2.sort(mockFileComparator);
-        files1Subdirs.sort(mockFileComparator);
-        files2Subdirs.sort(mockFileComparator);
         
         assertAll(
-                () -> assertEquals(Arrays.asList(file5, file1), files1),
-                () -> assertEquals(Arrays.asList(file2, file4), files2),
-                () -> assertEquals(Collections.singletonList(file6), files3),
-                () -> assertEquals(files1, files1Subdirs),
-                () -> assertEquals(files2, files2Subdirs)
+                () -> assertEquals(Arrays.asList(catTiff, dogTiff), files1),
+                () -> assertEquals(Collections.singletonList(oneBin), files2),
+                () -> assertEquals(Collections.singletonList(makefile1), files3),
+                () -> assertEquals(Collections.emptyList(), files4),
+                () -> assertEquals(Collections.emptyList(), files5)
         );
     }
     
     
     @Test
-    void testGetFilesByExtensionDir4WithoutSubdirs() {
-        List<File> files1 = IOService.getFilesByExtension(dir4, "png", false);
-        List<File> files2 = IOService.getFilesByExtension(dir4, "bin", false);
+    void testGetFilesByExtensionNotADirectory() {
+        assertThrows(IllegalArgumentException.class, () -> IOService.getFilesByExtension(essayDocx, "txt"));
+    }
+    
+    
+    @Test
+    void testGetFilesByRegex() {
+        List<File> files1 = IOService.getFilesByRegex(textDir, ".*txt");
+        List<File> files2 = IOService.getFilesByRegex(rootDir, "\\d.bin");
+        List<File> files3 = IOService.getFilesByRegex(rootDir, "^[a-z]*\\.[a-z]*x.?$");
+        List<File> files4 = IOService.getFilesByRegex(rootDir, "[a-z]*es[a-z\\.]*");
+        List<File> files5 = IOService.getFilesByRegex(rootDir, "[\\w\\.]*n[\\w\\.]*");
+        List<File> files6 = IOService.getFilesByRegex(rootDir, "[\\w\\.]*");
+        List<File> files7 = IOService.getFilesByRegex(textDir, null);
+        
+        files3.sort(mockFileComparator);
+        files4.sort(mockFileComparator);
+        files5.sort(mockFileComparator);
+        files6.sort(Comparator.comparing(File::getAbsolutePath));
         
         assertAll(
-                () -> assertEquals(Collections.emptyList(), files1),
-                () -> assertEquals(Collections.singletonList(file4), files2)
+                () -> assertEquals(Collections.singletonList(uselessTxt), files1),
+                () -> assertEquals(Collections.singletonList(oneBin), files2),
+                () -> assertEquals(Arrays.asList(essayDocx, uselessTxt), files3),
+                () -> assertEquals(Arrays.asList(essayDocx, imagesDir, uselessTxt), files4),
+                () -> assertEquals(
+                        Arrays.asList(
+                                makefile1, binDir, oneBin, emptyDir, imagesDir, catTiff, dogTiff, imagesPngDir, logoPng,
+                                textDir, makefile2, essayDocx, uselessTxt
+                        ), files6),
+                () -> assertEquals(Collections.emptyList(), files7)
         );
     }
     
     
     @Test
-    void testGetFilesByExtensionDir4WithSubdirs() {
-        List<File> files1 = IOService.getFilesByExtension(dir4, "png", true);
-        List<File> files2 = IOService.getFilesByExtension(dir4, "bin", true);
-        List<File> files3 = IOService.getFilesByExtension(dir4, "", true);
-        
-        files2.sort(mockFileComparator);
-        
-        assertAll(
-                () -> assertEquals(Arrays.asList(file3, file3), files1),
-                () -> assertEquals(Arrays.asList(file2, file2, file4, file4, file4), files2),
-                () -> assertEquals(Arrays.asList(file6, file6), files3)
-        );
+    void testGetFilesByRegexNotADirectory() {
+        assertThrows(IllegalArgumentException.class, () -> IOService.getFilesByRegex(essayDocx, ".*txt"));
     }
 }
