@@ -17,20 +17,17 @@ public class TestIOService {
     @Test
     void testInputOutputBinary1() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-    
+        
         int[] array = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
-        int[] actual = new int[]{-1, 3, -2147483648, 20, 141};
-        int[] expected = new int[5];
+        int[] expected = new int[]{-1, 3, -2147483648, 20, 141};
         
         IOService.writeIntArrayToBinaryStream(array, out, 6);
-        IOService.readIntArrayFromBinaryStream(expected, new ByteArrayInputStream(out.toByteArray()), 5);
+        int[] actual = IOService.readIntArrayFromBinaryStream(new ByteArrayInputStream(out.toByteArray()), 5);
         
         assertAll(
-                () -> assertArrayEquals(actual, expected),
-                () -> assertThrows(ArrayIndexOutOfBoundsException.class,
-                        () -> IOService.readIntArrayFromBinaryStream(expected, new ByteArrayInputStream(out.toByteArray()), 7)),
+                () -> assertArrayEquals(expected, actual),
                 () -> assertThrows(IOException.class,
-                        () -> IOService.readIntArrayFromBinaryStream(expected, new ByteArrayInputStream(new byte[5]), 2))
+                        () -> IOService.readIntArrayFromBinaryStream(new ByteArrayInputStream(new byte[5]), 2))
         );
     }
     
@@ -38,19 +35,19 @@ public class TestIOService {
     @Test
     void testInputOutputBinary2() throws IOException {
         File file = new File(tempDir, "test.bin");
-    
-        int[] actual = new int[]{1, 2, -3, 2000000};
-        int[] expected = new int[4];
+        
+        int[] expected = new int[]{1, 2, -3, 2000000};
         
         try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
-            IOService.writeIntArrayToBinaryStream(actual, out, 4);
+            IOService.writeIntArrayToBinaryStream(expected, out, 4);
         }
         
+        int[] actual = null;
         try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
-            IOService.readIntArrayFromBinaryStream(expected, in, 4);
+            actual = IOService.readIntArrayFromBinaryStream(in, 4);
         }
         
-        assertArrayEquals(actual, expected);
+        assertArrayEquals(expected, actual);
     }
     
     
@@ -59,18 +56,19 @@ public class TestIOService {
         StringWriter out = new StringWriter();
         
         int[] array = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
-        int[] actual = new int[]{-1, 3, -2147483648, 20, 141};
-        int[] expected = new int[5];
+        int[] expected = new int[]{-1, 3, -2147483648, 20, 141};
         
         IOService.writeIntArrayToCharStream(array, out, 6);
-        IOService.readIntArrayFromCharStream(expected, new StringReader(out.toString()), 5);
+        String str = out.toString();
+        
+        int[] actual = IOService.readIntArrayFromCharStream(new StringReader(str), 5);
         
         assertAll(
-                () -> assertArrayEquals(actual, expected),
-                () -> assertThrows(ArrayIndexOutOfBoundsException.class,
-                        () -> IOService.readIntArrayFromCharStream(expected, new StringReader(out.toString()), 7)),
+                () -> assertArrayEquals(expected, actual),
                 () -> assertThrows(IOException.class,
-                        () -> IOService.readIntArrayFromCharStream(expected, new StringReader(""), 7))
+                        () -> IOService.readIntArrayFromCharStream(new StringReader(""), 3)),
+                () -> assertThrows(NumberFormatException.class,
+                        () -> IOService.readIntArrayFromCharStream(new StringReader(str), 7))
         );
     }
     
@@ -79,17 +77,17 @@ public class TestIOService {
     void testInputOutputChar2() throws IOException {
         File file = new File(tempDir, "test.txt");
         
-        int[] actual = new int[]{1, 2, -3, 2000000};
-        int[] expected = new int[4];
+        int[] expected = new int[]{1, 2, -3, 2000000};
         
         try (Writer out = new BufferedWriter(new FileWriter(file))) {
-            IOService.writeIntArrayToCharStream(actual, out, 4);
+            IOService.writeIntArrayToCharStream(expected, out, 4);
         }
         
+        int[] actual = null;
         try (Reader in = new BufferedReader(new FileReader(file))) {
-            IOService.readIntArrayFromCharStream(expected, in, 4);
+            actual = IOService.readIntArrayFromCharStream(in, 4);
         }
         
-        assertArrayEquals(actual, expected);
+        assertArrayEquals(expected, actual);
     }
 }
