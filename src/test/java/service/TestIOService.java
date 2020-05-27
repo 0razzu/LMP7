@@ -68,7 +68,9 @@ public class TestIOService {
         assertAll(
                 () -> assertArrayEquals(actual, expected),
                 () -> assertThrows(ArrayIndexOutOfBoundsException.class,
-                        () -> IOService.readIntArrayFromCharStream(expected, new StringReader(out.toString()), 7))
+                        () -> IOService.readIntArrayFromCharStream(expected, new StringReader(out.toString()), 7)),
+                () -> assertThrows(IOException.class,
+                        () -> IOService.readIntArrayFromCharStream(expected, new StringReader(""), 7))
         );
     }
     
