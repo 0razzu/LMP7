@@ -3,12 +3,14 @@ package model;
 
 import error.ErrorMessage;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 
-public class House {
+public class House implements Serializable {
+    private static final long serialVersionUID = 3L;
     private String cadastralNumber;
     private String address;
     private Person head;
@@ -24,9 +26,6 @@ public class House {
     
     
     public void setCadastralNumber(String cadastralNumber) {
-        if (cadastralNumber == null || cadastralNumber.length() == 0)
-            throw new IllegalArgumentException(ErrorMessage.NULL_CADASTRAL_NUMBER);
-        
         this.cadastralNumber = cadastralNumber;
     }
     
@@ -40,9 +39,6 @@ public class House {
     
     
     public void setHead(Person head) {
-        if (head == null)
-            throw new IllegalArgumentException(ErrorMessage.NULL_HEAD);
-        
         this.head = head;
     }
     
@@ -81,9 +77,9 @@ public class House {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         House house = (House) o;
-        return cadastralNumber.equals(house.cadastralNumber) &&
+        return Objects.equals(cadastralNumber, house.cadastralNumber) &&
                 address.equals(house.address) &&
-                head.equals(house.head) &&
+                Objects.equals(head, house.head) &&
                 flats.equals(house.flats);
     }
     

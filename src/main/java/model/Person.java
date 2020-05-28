@@ -3,13 +3,13 @@ package model;
 
 import error.ErrorMessage;
 
-import java.time.LocalDate;
-import java.util.Calendar;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 
-public class Person {
+public class Person implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String firstName;
     private String patronymicName;
     private String lastName;

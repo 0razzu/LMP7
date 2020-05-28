@@ -3,12 +3,14 @@ package model;
 
 import error.ErrorMessage;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 
-public class Flat {
+public class Flat implements Serializable {
+    private static final long serialVersionUID = 2L;
     public static final double EPS = 1E-6;
     private int number;
     private double area;

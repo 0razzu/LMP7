@@ -9,7 +9,5 @@ public class ErrorMessage {
     public static final String NULL_DATE_OF_BIRTH = "A date of birth cannot be null";
     public static final String NON_POSITIVE_FLAT_NUMBER = "A flat number cannot be negative or zero";
     public static final String NON_POSITIVE_FLAT_AREA = "Flat area cannot be negative or zero";
-    public static final String NULL_CADASTRAL_NUMBER = "A cadastral number cannot be null or an empty string";
     public static final String NULL_ADDRESS = "An address cannot be null or an empty string";
-    public static final String NULL_HEAD = "A head cannot be null";
 }
