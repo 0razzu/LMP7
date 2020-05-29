@@ -1,4 +1,4 @@
-package service.json_serializers;
+package service.json_serializer;
 
 
 import com.fasterxml.jackson.core.JsonGenerator;

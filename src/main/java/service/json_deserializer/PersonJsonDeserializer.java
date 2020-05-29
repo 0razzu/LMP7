@@ -1,4 +1,4 @@
-package service.json_deserializers;
+package service.json_deserializer;
 
 
 import com.fasterxml.jackson.core.JsonParser;

@@ -1,7 +1,11 @@
 package model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import error.ErrorMessage;
+import service.json_deserializer.FlatJsonDeserializer;
+import service.json_serializer.FlatJsonSerializer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,6 +13,8 @@ import java.util.List;
 import java.util.Objects;
 
 
+@JsonSerialize(using = FlatJsonSerializer.class)
+@JsonDeserialize(using = FlatJsonDeserializer.class)
 public class Flat implements Serializable {
     private static final long serialVersionUID = 2L;
     public static final double EPS = 1E-6;

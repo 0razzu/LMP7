@@ -4,8 +4,8 @@ package model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import error.ErrorMessage;
-import service.json_deserializers.PersonJsonDeserializer;
-import service.json_serializers.PersonJsonSerializer;
+import service.json_deserializer.PersonJsonDeserializer;
+import service.json_serializer.PersonJsonSerializer;
 
 import java.io.Serializable;
 import java.util.Date;
