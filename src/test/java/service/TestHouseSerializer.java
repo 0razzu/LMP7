@@ -113,7 +113,11 @@ public class TestHouseSerializer {
                 actual.append(line).append('\n');
         }
         
-        assertEquals(expected, actual.toString());
+        assertAll(
+                () -> assertEquals(expected, actual.toString()),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> HouseSerializer.serializeHouseToCsv(house1, file, StandardCharsets.UTF_8))
+        );
     }
     
     
