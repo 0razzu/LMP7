@@ -1,6 +1,8 @@
 package service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import error.ErrorMessage;
 import model.Flat;
 import model.House;
@@ -12,6 +14,9 @@ import java.util.List;
 
 
 public class HouseSerializer {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    
     public static void serializeHouseToObjectStream(House house, ObjectOutputStream stream) throws IOException {
         stream.writeObject(house);
     }
@@ -86,5 +91,15 @@ public class HouseSerializer {
                 out.newLine();
             }
         }
+    }
+    
+    
+    public static String serializeHouseToJson(House house) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(house);
+    }
+    
+    
+    public static House deserializeHouseFromJson(String houseJson) throws JsonProcessingException {
+        return objectMapper.readValue(houseJson, House.class);
     }
 }

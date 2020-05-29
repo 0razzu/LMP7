@@ -1,6 +1,7 @@
 package service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import model.Flat;
 import model.House;
 import model.Person;
@@ -51,7 +52,7 @@ public class TestHouseSerializer {
     
     
     @Test
-    void testSerializeDeserializeHouse1() throws IOException, ClassNotFoundException {
+    void testSerializeDeserializeObjectStream1() throws IOException, ClassNotFoundException {
         byte[] array;
         
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -69,7 +70,7 @@ public class TestHouseSerializer {
     
     
     @Test
-    void testSerializeDeserializeHouse2() throws IOException, ClassNotFoundException {
+    void testSerializeDeserializeObjectStream2() throws IOException, ClassNotFoundException {
         File file = new File(tempDir, "test.bin");
         
         try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
@@ -85,7 +86,7 @@ public class TestHouseSerializer {
     
     
     @Test
-    void testSerializeHouseToCsv1() throws IOException {
+    void testSerializeToCsv1() throws IOException {
         HouseSerializer.serializeHouseToCsv(house1, tempDir, StandardCharsets.UTF_8);
         
         File file = new File(tempDir, "house_55.36.050208.11906.csv");
@@ -117,7 +118,7 @@ public class TestHouseSerializer {
     
     
     @Test
-    void testSerializeHouseToCsv2() throws IOException {
+    void testSerializeToCsv2() throws IOException {
         HouseSerializer.serializeHouseToCsv(house2, tempDir, StandardCharsets.UTF_8);
         
         File file = new File(tempDir, "house_no_cadastral_number.csv");
@@ -143,5 +144,17 @@ public class TestHouseSerializer {
         }
         
         assertEquals(expected, actual.toString());
+    }
+    
+    
+    @Test
+    void testSerializeDeserializeJson() throws JsonProcessingException {
+        String house1Json = HouseSerializer.serializeHouseToJson(house1);
+        String house2Json = HouseSerializer.serializeHouseToJson(house2);
+        
+        assertAll(
+                () -> assertEquals(house1, HouseSerializer.deserializeHouseFromJson(house1Json)),
+                () -> assertEquals(house2, HouseSerializer.deserializeHouseFromJson(house2Json))
+        );
     }
 }

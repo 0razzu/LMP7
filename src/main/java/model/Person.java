@@ -16,6 +16,10 @@ public class Person implements Serializable {
     private Date dateOfBirth;
     
     
+    public Person() {
+    }
+    
+    
     public Person(String firstName, String patronymicName, String lastName, Date dateOfBirth) {
         setFirstName(firstName);
         setPatronymicName(patronymicName);
@@ -83,10 +87,10 @@ public class Person implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return firstName.equals(person.firstName) &&
+        return Objects.equals(firstName, person.firstName) &&
                 Objects.equals(patronymicName, person.patronymicName) &&
-                lastName.equals(person.lastName) &&
-                dateOfBirth.equals(person.dateOfBirth);
+                Objects.equals(lastName, person.lastName) &&
+                Objects.equals(dateOfBirth, person.dateOfBirth);
     }
     
     

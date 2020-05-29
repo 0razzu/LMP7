@@ -17,6 +17,10 @@ public class Flat implements Serializable {
     private List<Person> owners;
     
     
+    public Flat() {
+    }
+    
+    
     public Flat(int number, double area, List<Person> owners) {
         setNumber(number);
         setArea(area);
@@ -70,8 +74,8 @@ public class Flat implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Flat flat = (Flat) o;
         return number == flat.number &&
-                Math.abs(flat.area - area) < EPS &&
-                owners.equals(flat.owners);
+                Double.compare(flat.area, area) == 0 &&
+                Objects.equals(owners, flat.owners);
     }
     
     

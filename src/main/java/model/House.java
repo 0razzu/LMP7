@@ -17,6 +17,10 @@ public class House implements Serializable {
     private List<Flat> flats;
     
     
+    public House() {
+    }
+    
+    
     public House(String cadastralNumber, String address, Person head, List<Flat> flats) {
         setCadastralNumber(cadastralNumber);
         setAddress(address);
@@ -78,9 +82,9 @@ public class House implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         House house = (House) o;
         return Objects.equals(cadastralNumber, house.cadastralNumber) &&
-                address.equals(house.address) &&
+                Objects.equals(address, house.address) &&
                 Objects.equals(head, house.head) &&
-                flats.equals(house.flats);
+                Objects.equals(flats, house.flats);
     }
     
     
