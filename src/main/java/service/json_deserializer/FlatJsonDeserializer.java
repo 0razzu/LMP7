@@ -50,7 +50,6 @@ public class FlatJsonDeserializer extends StdDeserializer<Flat> {
                 
                 while (token != JsonToken.END_ARRAY) {
                     owners.add(objectMapper.readValue(jsonParser, Person.class));
-                    
                     token = jsonParser.nextToken();
                 }
             }

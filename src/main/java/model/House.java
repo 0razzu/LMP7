@@ -1,7 +1,11 @@
 package model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import error.ErrorMessage;
+import service.json_deserializer.HouseJsonDeserializer;
+import service.json_serializer.HouseJsonSerializer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,6 +13,8 @@ import java.util.List;
 import java.util.Objects;
 
 
+@JsonSerialize(using = HouseJsonSerializer.class)
+@JsonDeserialize(using = HouseJsonDeserializer.class)
 public class House implements Serializable {
     private static final long serialVersionUID = 3L;
     private String cadastralNumber;

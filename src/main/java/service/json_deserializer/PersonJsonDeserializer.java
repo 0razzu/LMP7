@@ -22,7 +22,7 @@ public class PersonJsonDeserializer extends StdDeserializer<Person> {
     public Person deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         JsonToken token = jsonParser.nextToken();
         
-        String fullName = "";
+        String fullName = null;
         long dateOfBirth = 0;
         
         while (token != JsonToken.END_OBJECT) {
