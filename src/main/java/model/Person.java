@@ -1,13 +1,19 @@
 package model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import error.ErrorMessage;
+import service.json_deserializers.PersonJsonDeserializer;
+import service.json_serializers.PersonJsonSerializer;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 
+@JsonSerialize(using = PersonJsonSerializer.class)
+@JsonDeserialize(using = PersonJsonDeserializer.class)
 public class Person implements Serializable {
     private static final long serialVersionUID = 1L;
     private String firstName;
