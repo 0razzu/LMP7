@@ -26,7 +26,9 @@ public class HouseSerializer {
         return (House) stream.readObject();
     }
     
-    
+    /* Филиппов А.В. 20.06.2020 Комментарий не удалять.
+     Есть System.lineSeparator() которая возвращает строчку перевода строки, можно избавиться от newLine
+    */
     public static void serializeHouseToCsv(House house, File dir, Charset charset) throws IOException {
         if (!dir.isDirectory())
             throw new IllegalArgumentException(ErrorMessage.NOT_A_DIRECTORY);

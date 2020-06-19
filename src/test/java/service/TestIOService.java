@@ -149,8 +149,7 @@ public class TestIOService {
         
         assertArrayEquals(expected, actual);
     }
-    
-    
+
     @Test
     void testInputOutputCharException() throws IOException {
         try (StringReader in1 = new StringReader("");
