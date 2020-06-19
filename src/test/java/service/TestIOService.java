@@ -61,14 +61,14 @@ public class TestIOService {
     
     @Test
     void testInputOutputBinary1() throws IOException {
-        int[] array = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
-        int[] expected = new int[]{-1, 3, -2147483648, 20, 141};
+        int[] expected = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
+        int[] actual = new int[7];
         
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            IOService.writeIntArrayToBinaryStream(array, out, 6);
+            IOService.writeIntArrayToBinaryStream(expected, out);
             
             try (ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray())) {
-                int[] actual = IOService.readIntArrayFromBinaryStream(in, 5);
+                IOService.readIntArrayFromBinaryStream(actual, in);
                 
                 assertArrayEquals(expected, actual);
             }
@@ -81,33 +81,17 @@ public class TestIOService {
         File file = new File(tempDir, "test.bin");
         
         int[] expected = new int[]{1, 2, -3, 2000000};
+        int[] actual = new int[4];
         
         try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
-            IOService.writeIntArrayToBinaryStream(expected, out, 4);
+            IOService.writeIntArrayToBinaryStream(expected, out);
         }
         
-        int[] actual;
         try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
-            actual = IOService.readIntArrayFromBinaryStream(in, 4);
+            IOService.readIntArrayFromBinaryStream(actual, in);
         }
         
         assertArrayEquals(expected, actual);
-    }
-    
-    
-    @Test
-    void testInputOutputBinaryException() throws IOException {
-        try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[5]);
-             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            assertAll(
-                    () -> assertThrows(IOException.class,
-                            () -> IOService.readIntArrayFromBinaryStream(in, 2)),
-                    () -> assertThrows(NegativeArraySizeException.class,
-                            () -> IOService.writeIntArrayToBinaryStream(new int[]{1, 2}, out, -1)),
-                    () -> assertThrows(NegativeArraySizeException.class,
-                            () -> IOService.readIntArrayFromBinaryStream(in, -2))
-            );
-        }
     }
     
     
@@ -149,7 +133,8 @@ public class TestIOService {
         
         assertArrayEquals(expected, actual);
     }
-
+    
+    
     @Test
     void testInputOutputCharException() throws IOException {
         try (StringReader in1 = new StringReader("");
