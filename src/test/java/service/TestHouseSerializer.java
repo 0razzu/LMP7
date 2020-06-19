@@ -104,7 +104,7 @@ public class TestHouseSerializer {
                 "2;\"40,0\";\"Воронцова А. Ф.\"\n" +
                 "10;\"100,0\";\"Петров И. И., Иванова А. С., Воронцова А. Ф.\"\n" +
                 "9;\"25,0\";\"\"\n";
-        StringBuilder actual = new StringBuilder("");
+        StringBuilder actual = new StringBuilder();
         
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
@@ -138,7 +138,7 @@ public class TestHouseSerializer {
                 "№;\"Площадь, кв. м\";Владельцы\n" +
                 "285;\"99,85\";\"Roux A.\"\n" +
                 "286;\"50,5\";\"Иванова А. С., Воронцова А. Ф.\"\n";
-        StringBuilder actual = new StringBuilder("");
+        StringBuilder actual = new StringBuilder();
         
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;

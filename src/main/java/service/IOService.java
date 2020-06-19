@@ -6,18 +6,11 @@ import error.ErrorMessage;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 
 public class IOService {
-    private static void checkSize(int size) {
-        if (size < 0)
-            throw new NegativeArraySizeException(Integer.toString(size));
-    }
-    
-    
     /* Филиппов А.В. 20.06.2020 Комментарий не удалять.
      Зачем передавать size? Нужно весь массив записывать же...
     */

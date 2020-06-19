@@ -2,7 +2,6 @@ package service.json_deserializer;
 
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -19,7 +18,7 @@ public class PersonJsonDeserializer extends StdDeserializer<Person> {
     
     
     @Override
-    public Person deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Person deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonToken token = jsonParser.nextToken();
         
         String fullName = null;

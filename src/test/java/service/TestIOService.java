@@ -21,7 +21,7 @@ public class TestIOService {
     static File tempDir;
     static File rootDir, emptyDir, textDir, binDir, imagesDir, imagesPngDir, makefile1, makefile2;
     static File uselessTxt, essayDocx, oneBin, catTiff, dogTiff, logoPng;
-    static Comparator<File> mockFileComparator = Comparator.comparing(File::getName);
+    static final Comparator<File> mockFileComparator = Comparator.comparing(File::getName);
     
     
     @BeforeAll

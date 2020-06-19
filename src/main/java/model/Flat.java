@@ -44,7 +44,7 @@ public class Flat implements Serializable {
     
     public void setArea(double area) {
         if (Math.abs(area) < EPS)
-            throw new IllegalArgumentException(ErrorMessage.NON_POSITIVE_FLAT_NUMBER);
+            throw new IllegalArgumentException(ErrorMessage.NON_POSITIVE_FLAT_AREA);
         
         this.area = area;
     }

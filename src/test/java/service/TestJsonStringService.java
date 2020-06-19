@@ -1,7 +1,6 @@
 package service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestJsonStringService {
     @Test
-    void testCompareJsonStrings() throws JsonProcessingException {
+    void testCompareJsonStrings() {
         String jsonString1 = "{\"color\":\"red\", \"weight\":123}";
         String jsonString2 = "{\"weight\":123, \"color\":\"red\"}";
         String jsonString3 = "{\"weight\":124, \"color\":\"red\"}";
