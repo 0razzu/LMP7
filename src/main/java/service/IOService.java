@@ -6,6 +6,7 @@ import error.ErrorMessage;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -48,11 +49,9 @@ public class IOService {
     }
     
     
-    public static void writeIntArrayToCharStream(int[] array, Writer stream, int size) throws IOException {
-        checkSize(size);
-        
-        for (int i = 0; i < size; i++) {
-            stream.write(Integer.toString(array[i]));
+    public static void writeIntArrayToCharStream(int[] array, Writer stream) throws IOException {
+        for (int value: array) {
+            stream.write(Integer.toString(value));
             stream.write(" ");
         }
     }
@@ -61,40 +60,30 @@ public class IOService {
     /* Филиппов А.В. 20.06.2020 Комментарий не удалять.
      Опять же массив создан и передается в функцию.
     */
-    public static int[] readIntArrayFromCharStream(Reader stream, int size) throws IOException {
-        char[] chars = new char[12 * size];
+    // fixed
+    public static void readIntArrayFromCharStream(int[] array, Reader stream) throws IOException {
+        char[] chars = new char[12 * array.length];
         
         if (stream.read(chars) == -1)
             throw new IOException();
         
         String[] strings = new String(chars).split(" ");
         
-        int[] array = new int[size];
-        
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < array.length; i++)
             array[i] = Integer.parseInt(strings[i]);
-        
-        return array;
     }
     
     
-    public static int[] readIntArrayFromRandomAccessFile(RandomAccessFile file, long offset, int size) throws IOException {
+    public static void readIntArrayFromRandomAccessFile(int[] array, RandomAccessFile file, long offset) throws IOException {
         /* Филиппов А.В. 20.06.2020 Комментарий не удалять.
          Бесполезная проверка - seek кинет IOException
         */
-        if (offset < 0)
-            throw new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET);
-        
-        checkSize(size);
+        // fixed
         
         file.seek(offset);
         
-        int[] array = new int[size];
-        
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < array.length; i++)
             array[i] = file.readInt();
-        
-        return array;
     }
     
     

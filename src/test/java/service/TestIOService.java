@@ -60,7 +60,7 @@ public class TestIOService {
     
     
     @Test
-    void testInputOutputBinary1() throws IOException {
+    void testReadWriteBinaryStream1() throws IOException {
         int[] expected = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
         int[] actual = new int[7];
         
@@ -70,14 +70,18 @@ public class TestIOService {
             try (ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray())) {
                 IOService.readIntArrayFromBinaryStream(actual, in);
                 
-                assertArrayEquals(expected, actual);
+                assertAll(
+                        () -> assertArrayEquals(expected, actual),
+                        () -> assertThrows(IOException.class,
+                                () -> IOService.readIntArrayFromBinaryStream(new int[8], in))
+                );
             }
         }
     }
     
     
     @Test
-    void testInputOutputBinary2() throws IOException {
+    void testReadWriteBinaryStream2() throws IOException {
         File file = new File(tempDir, "test.bin");
         
         int[] expected = new int[]{1, 2, -3, 2000000};
@@ -96,39 +100,39 @@ public class TestIOService {
     
     
     @Test
-    void testInputOutputChar1() throws IOException {
-        int[] array = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
-        int[] expected = new int[]{-1, 3, -2147483648, 20, 141};
+    void testReadWriteCharStream1() throws IOException {
+        int[] expected = new int[]{-1, 3, -2147483648, 20, 141, 1, 2};
+        int[] actual = new int[7];
         
         try (StringWriter out = new StringWriter()) {
-            IOService.writeIntArrayToCharStream(array, out, 6);
+            IOService.writeIntArrayToCharStream(expected, out);
             String str = out.toString();
             
             try (StringReader in = new StringReader(str)) {
-                int[] actual = IOService.readIntArrayFromCharStream(in, 5);
-                
-                assertAll(
-                        () -> assertArrayEquals(expected, actual),
-                        () -> assertEquals("-1 3 -2147483648 20 141 1 ", str)
-                );
+                IOService.readIntArrayFromCharStream(actual, in);
             }
+            
+            assertAll(
+                    () -> assertArrayEquals(expected, actual),
+                    () -> assertEquals("-1 3 -2147483648 20 141 1 2 ", str)
+            );
         }
     }
     
     
     @Test
-    void testInputOutputChar2() throws IOException {
+    void testReadWriteCharStream2() throws IOException {
         File file = new File(tempDir, "test.txt");
         
         int[] expected = new int[]{1, 2, -3, 2000000};
+        int[] actual = new int[4];
         
         try (Writer out = new BufferedWriter(new FileWriter(file))) {
-            IOService.writeIntArrayToCharStream(expected, out, 4);
+            IOService.writeIntArrayToCharStream(expected, out);
         }
         
-        int[] actual;
         try (Reader in = new BufferedReader(new FileReader(file))) {
-            actual = IOService.readIntArrayFromCharStream(in, 4);
+            IOService.readIntArrayFromCharStream(actual, in);
         }
         
         assertArrayEquals(expected, actual);
@@ -136,19 +140,14 @@ public class TestIOService {
     
     
     @Test
-    void testInputOutputCharException() throws IOException {
+    void testReadCharStreamException() {
         try (StringReader in1 = new StringReader("");
-             StringReader in2 = new StringReader("1 2 3 4 ");
-             StringWriter out = new StringWriter()) {
+             StringReader in2 = new StringReader("1 2n 3 4 ")) {
             assertAll(
                     () -> assertThrows(IOException.class,
-                            () -> IOService.readIntArrayFromCharStream(in1, 2)),
+                            () -> IOService.readIntArrayFromCharStream(new int[1], in1)),
                     () -> assertThrows(NumberFormatException.class,
-                            () -> IOService.readIntArrayFromCharStream(in2, 5)),
-                    () -> assertThrows(NegativeArraySizeException.class,
-                            () -> IOService.writeIntArrayToCharStream(new int[]{1, 2, 3}, out, -1)),
-                    () -> assertThrows(NegativeArraySizeException.class,
-                            () -> IOService.readIntArrayFromCharStream(in2, -2))
+                            () -> IOService.readIntArrayFromCharStream(new int[4], in2))
             );
         }
     }
@@ -158,19 +157,21 @@ public class TestIOService {
     void testReadIntArrayFromRandomAccessFile() throws IOException {
         File file = new File(tempDir, "test.bin");
         
+        int[] actual1 = new int[10];
+        int[] actual2 = new int[3];
+        
         try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
             for (int i = 0; i < 10; i++)
                 raf.writeInt(i);
             
+            IOService.readIntArrayFromRandomAccessFile(actual1, raf, 0);
+            IOService.readIntArrayFromRandomAccessFile(actual2, raf, 4);
+            
             assertAll(
-                    () -> assertArrayEquals(new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-                            IOService.readIntArrayFromRandomAccessFile(raf, 0, 10)),
-                    () -> assertArrayEquals(new int[]{1, 2, 3},
-                            IOService.readIntArrayFromRandomAccessFile(raf, 4, 3)),
-                    () -> assertThrows(IllegalArgumentException.class,
-                            () -> IOService.readIntArrayFromRandomAccessFile(raf, -1, 2)),
-                    () -> assertThrows(NegativeArraySizeException.class,
-                            () -> IOService.readIntArrayFromRandomAccessFile(raf, 1, -2))
+                    () -> assertArrayEquals(new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, actual1),
+                    () -> assertArrayEquals(new int[]{1, 2, 3}, actual2),
+                    () -> assertThrows(IOException.class,
+                            () -> IOService.readIntArrayFromRandomAccessFile(new int[2], raf, -1))
             );
         }
     }
