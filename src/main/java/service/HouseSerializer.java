@@ -15,6 +15,7 @@ import java.util.List;
 
 public class HouseSerializer {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String sep = System.lineSeparator();
     
     
     public static void serializeHouseToObjectStream(House house, ObjectOutputStream stream) throws IOException {
@@ -26,9 +27,11 @@ public class HouseSerializer {
         return (House) stream.readObject();
     }
     
+    
     /* Филиппов А.В. 20.06.2020 Комментарий не удалять.
      Есть System.lineSeparator() которая возвращает строчку перевода строки, можно избавиться от newLine
     */
+    // fixed
     public static void serializeHouseToCsv(House house, File dir, Charset charset) throws IOException {
         if (!dir.isDirectory())
             throw new IllegalArgumentException(ErrorMessage.NOT_A_DIRECTORY);
@@ -40,12 +43,10 @@ public class HouseSerializer {
         
         try (BufferedWriter out =
                      new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(dir, fileName)), charset))) {
-            out.write("Данные о доме;;");
-            out.newLine();
-            out.write(String.format("Кадастровый номер;%s;", cadastralNumber == null? "" : cadastralNumber));
-            out.newLine();
-            out.write(String.format("Адрес;\"%s\";", house.getAddress()));
-            out.newLine();
+            out.write("Данные о доме;;" + sep);
+            out.write(String.format("Кадастровый номер;%s;" + sep,
+                    cadastralNumber == null? "" : cadastralNumber));
+            out.write(String.format("Адрес;\"%s\";" + sep, house.getAddress()));
             out.write("Старший по дому;");
             
             Person head = house.getHead();
@@ -61,14 +62,10 @@ public class HouseSerializer {
                 }
             }
             
-            out.write(";");
-            out.newLine();
-            out.write(";;");
-            out.newLine();
-            out.write("Данные о квартирах;;");
-            out.newLine();
-            out.write("№;\"Площадь, кв. м\";Владельцы");
-            out.newLine();
+            out.write(";" + sep);
+            out.write(";;" + sep);
+            out.write("Данные о квартирах;;" + sep);
+            out.write("№;\"Площадь, кв. м\";Владельцы" + sep);
             
             for (Flat flat: house.getFlats()) {
                 out.write(String.format("%d;\"%s\";\"", flat.getNumber(),
@@ -89,8 +86,7 @@ public class HouseSerializer {
                         out.write(", ");
                 }
                 
-                out.write('"');
-                out.newLine();
+                out.write('"' + sep);
             }
         }
     }
